@@ -1,0 +1,23 @@
+<div id="main" xmlns="http://www.w3.org/1999/html">
+  <h1 class="title">Warcards Validate</h1>
+
+  <form action="/warcards/play" method="GET">
+    <input type="submit" value="Continue" id="continue" autofocus="autofocus"/>
+  </form>
+
+  <h2 id="difficulty" class="logtypes">Difficulty: <%= @difficulty %></h2>
+
+  <h2 class="logtypes">Question data:</h2>
+  <table>
+    <% @@questions.each do |question| %>
+        <tr class="logtypes">
+          <td class="logtypes">
+            <p>Question:  <%= question.pose %>
+              <br/>
+              Answer:  <%= question.answer %></p>
+          </td>
+        </tr>
+    <% end %>
+  </table>
+
+</div>

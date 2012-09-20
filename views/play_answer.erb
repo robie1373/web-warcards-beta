@@ -1,0 +1,21 @@
+<div id="main" xmlns="http://www.w3.org/1999/html">
+  <h1 class="title">Answer</h1>
+
+  <p class="logtypes">
+    <% if @answer == session[:this_answer] %>
+        That's right! <em>'<%= @answer %>'</em> was the correct answer
+        <% button_text = "Sweet! I'll try one more" %>
+    <% else %>
+        Woops! <em>'<%= session[:this_answer] %>'</em> was the correct answer.
+        <% button_text = "Drat! Gimme another one" %>
+        <% session[:result][:winner] = @@game.ai %>
+        <%= "<br />#{session[:result][:winner].name} became the winner." %>
+    <% end %>
+    <p class="war"><%= "<br />#{session[:result][:winner].name} should get the discard." %></p>
+    <% @@gameplay_instance.discard(session[:result]) %>
+  </p>
+
+  <form method="get" action="/warcards/play">
+    <input type="submit" value="<%= button_text %>" autofocus="autofocus"/>
+  </form>
+</div>

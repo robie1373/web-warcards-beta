@@ -1,0 +1,68 @@
+<div id="main">
+
+  <h1 class="title">Warcards</h1>
+
+  <p class="logtypes">
+    <%= @@game.ai.name %>   Vs.   <%= request.cookies['player_name'] %>
+    <br/>
+    <br/>
+
+    <% if @@gameplay_instance.game_over?[:over?] == FALSE %>
+        <% @@gameplay_instance.rearm? %>
+        <%= "#{@@game.ai.name}'s card: #{@@gameplay_instance.ai_cards.last.value}
+      of #{@@gameplay_instance.ai_cards.last.suit} Vs. #{request.cookies['player_name']}'s card:
+      #{@@gameplay_instance.player_cards.last.value} of #{@@gameplay_instance.player_cards.last.suit}" %>
+        </p>
+
+        <% if @war_stringio.length == 0 %>
+            <p class="war" id=""><%= "<br />#{session[:result][:winner].name} was the last winner." %></p>
+            <p class="logtypes">
+              <%= "#{session[:result][:winner].name} has the higher card!" %>
+              <%= "Player has #{@@game.player_holdings} cards.\tAI has #{@@game.ai_holdings} cards." %>
+              <br/>
+              <%= "#{@@game.build_graph(@@game.player_holdings, @@game.ai_holdings)}" %>
+            </p>
+
+            <% if session[:result][:winner] == @@game.player %>
+                <p class="logtypes">
+                  <% session[:this_question] = @@questions.sample %>
+                  <%= session[:this_question].pose %>
+                  <% session[:this_answer] = session[:this_question].answer %>
+                </p>
+
+                <form action="/warcards/play" method="post">
+                  <input type="text" name="answer" placeholder="Answer..." size="60" autofocus="autofocus"/>
+                  <input type="submit" value="Submit answer"/>
+                </form>
+                <% @@gameplay_instance.discard(session[:result]) %>
+            <% else %>
+                <form action="/warcards/play" method="get">
+                  <p class="logtypes">
+                    <% if @@game.test_ai(rand, (request.cookies['difficulty'].to_i * 0.1)) %>
+                        <%= "#{@@game.ai.name} was correct and wins the round." %>
+                    <% else %>
+                        <%= "#{@@game.ai.name} was incorrect. #{@@game.player.name} wins the round!" %>
+                        <% session[:result][:winner] = @@game.player %>
+                    <% end %>
+                  </p>
+                  <input type="submit" value="Deal again" autofocus="autofocus"/>
+                </form>
+
+                <% @@gameplay_instance.discard(session[:result]) %>
+            <% end %>
+        <% else %>
+            <form action="/warcards/play" method="get">
+              <p class="war">
+                <%= "There was war! #{session[:result][:player_cards].length * 2} cards at stake." %>
+              </p>
+              <input type="submit" value="Double Down!" autofocus="autofocus"/>
+            </form>
+            <% @@gameplay_instance.discard(session[:result]) %>
+        <% end %>
+    <% else %>
+        <p class="logtypes">
+          <%= "Game Over. #{@@gameplay_instance.game_over?[:winner]} won!" %>
+        </p>
+    <% end %>
+
+    </div>
